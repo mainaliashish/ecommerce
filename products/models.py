@@ -1,7 +1,6 @@
 from django.db import models
 import uuid
 
-# Create your models here.
 class Product(models.Model):
     title = models.CharField(max_length=250,null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -9,3 +8,9 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True,
                           primary_key=True, editable=False)
+
+    def __str__(self) -> str:
+        return self.title
+
+    def __unicode__(self):
+        return self.title
