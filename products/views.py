@@ -25,9 +25,10 @@ def product_featured_view(request):
     return render(request, 'products/featured.html', context)
 
 
-def product_detail_view(request, pk):
+def product_detail_view(request, slug):
     # Method 1
-    instance = Product.objects.get_by_id(pk)
+    # instance = Product.objects.get_by_id(pk)
+    instance = Product.objects.get_by_slug(slug)
     if instance is None:
         raise Http404("Product doesn't exist.")
 
