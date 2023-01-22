@@ -24,12 +24,19 @@ class ProductManager(models.Manager):
             return qs.first()
         return None
 
+    def get_featured(self):
+        qs = self.get_queryset().filter(featured=True)
+        if qs.count() > 0:
+            return qs
+        return None
+
 
 class Product(models.Model):
     title = models.CharField(max_length=250,null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     price = models.DecimalField(default=0, decimal_places=2, max_digits=20, null=True)
     image = models.ImageField(upload_to=upload_image_path, null=True, blank=True)
+    featured = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True,
                           primary_key=True, editable=False)
