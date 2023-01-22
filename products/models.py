@@ -16,8 +16,21 @@ def upload_image_path(instance, filename):
     return f"products/{final_file_name}"
 
 
+class ProductQuerySet(models.query.QuerySet):
+    def active(self):
+        return self.filter(is_active=True)
+
+    def featured(self):
+        return self.filter(featured=True, is_active=True)
+
 # Model manager
 class ProductManager(models.Manager):
+    def get_queryset(self):
+        return ProductQuerySet(self.model, using=self._db)
+
+    def all(self):
+        return self.get_queryset().active()
+
     def get_by_id(self, id):
         qs =  self.get_queryset().filter(id=id)
         if qs.count() == 1:
@@ -37,6 +50,7 @@ class Product(models.Model):
     price = models.DecimalField(default=0, decimal_places=2, max_digits=20, null=True)
     image = models.ImageField(upload_to=upload_image_path, null=True, blank=True)
     featured = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True,
                           primary_key=True, editable=False)
