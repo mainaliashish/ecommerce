@@ -8,7 +8,7 @@
 </head>
 <body>
     {% for product in object_list %}
-        <a href="{% url 'product' product.id %}">{{ product.title }}</a>
+        <a href="{% url 'product' product.slug %}">{{ product.title }}</a>
         <p>{{ product.description }}</p>
     {% endfor %}
 </body>
