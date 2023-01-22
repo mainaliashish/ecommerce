@@ -15,6 +15,16 @@ def upload_image_path(instance, filename):
     final_file_name = f"{new_file_name}{ext}"
     return f"products/{final_file_name}"
 
+
+# Model manager
+class ProductManager(models.Manager):
+    def get_by_id(self, id):
+        qs =  self.get_queryset().filter(id=id)
+        if qs.count() == 1:
+            return qs.first()
+        return None
+
+
 class Product(models.Model):
     title = models.CharField(max_length=250,null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -23,6 +33,8 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True,
                           primary_key=True, editable=False)
+
+    objects = ProductManager()
 
     def __str__(self) -> str:
         return self.title

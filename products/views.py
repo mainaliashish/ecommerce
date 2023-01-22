@@ -19,7 +19,10 @@ def product_list_view(request):
 
 def product_detail_view(request, pk):
     # Method 1
-    product = get_object_or_404(Product, id=pk)
+    instance = Product.objects.get_by_id(pk)
+    if instance is None:
+        raise Http404("Product doesn't exist.")
+
     # Method 2
     # querySet = Product.objects.filter(id=pk)
     # if querySet.exists() and querySet.count() == 1:
@@ -27,6 +30,6 @@ def product_detail_view(request, pk):
     # else:
     #     raise Http404("Product doesn't exist.")
     context = {
-        'product': product
+        'product': instance
         }
     return render(request, 'products/detail.html', context)
