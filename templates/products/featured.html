@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% for product in querySet %}
+        <a href="{% url 'product' product.id %}">{{ product.title }}</a>
+        <p>{{ product.description }}</p>
+        <img src="{{ product.image.url }}" alt="" srcset="">
+    {% endfor %}
+</body>
+</html>
