@@ -17,6 +17,14 @@ def product_list_view(request):
     return render(request, 'products/list.html', context)
 
 
+def product_featured_view(request):
+    querySet = Product.objects.get_featured()
+    context = {
+        'querySet': querySet
+    }
+    return render(request, 'products/featured.html', context)
+
+
 def product_detail_view(request, pk):
     # Method 1
     instance = Product.objects.get_by_id(pk)
