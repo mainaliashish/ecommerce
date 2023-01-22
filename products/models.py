@@ -2,6 +2,8 @@ from django.db import models
 import uuid
 import random
 import os, time
+from django.db.models.signals import pre_save, post_save
+from products.utils import unique_slug_generator
 
 def get_file_extension(file_path):
     base_name = os.path.basename(file_path)
@@ -37,6 +39,12 @@ class ProductManager(models.Manager):
             return qs.first()
         return None
 
+    def get_by_slug(self, slug):
+        qs = self.get_queryset().filter(slug=slug)
+        if qs.count() == 1:
+            return qs.first()
+        return None
+
     def get_featured(self):
         qs = self.get_queryset().filter(featured=True)
         if qs.count() > 0:
@@ -46,6 +54,7 @@ class ProductManager(models.Manager):
 
 class Product(models.Model):
     title = models.CharField(max_length=250,null=True, blank=True)
+    slug = models.SlugField(blank=True, null=True, unique=True)
     description = models.TextField(null=True, blank=True)
     price = models.DecimalField(default=0, decimal_places=2, max_digits=20, null=True)
     image = models.ImageField(upload_to=upload_image_path, null=True, blank=True)
@@ -62,3 +71,10 @@ class Product(models.Model):
 
     def __unicode__(self):
         return self.title
+
+
+def product_pre_save_receiver(sender, instance, *args, **kwargs):
+    if not instance.slug:
+        instance.slug = unique_slug_generator(instance)
+
+pre_save.connect(product_pre_save_receiver, sender=Product)
