@@ -21,7 +21,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'products'
+    # Custom apps
+    'products',
+    'search',
+    'tags'
 ]
 
 MIDDLEWARE = [
@@ -109,6 +112,7 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / 'static_cdn/static_root'
 
+# Setup media root and media url
 MEDIA_URL = '/media_root/'
 MEDIA_ROOT = BASE_DIR / 'static_cdn/media_root'
 

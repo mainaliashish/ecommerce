@@ -7,10 +7,11 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('products/', include('products.urls')),
+    path('search/', include('search.urls')),
     path('', include('products.urls') )
 ]
 
-# Setup static root and media root
+# Setup static root and media root for images, css, js
 if settings.DEBUG:
     urlpatterns = urlpatterns + \
         static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
