@@ -4,7 +4,7 @@ from products.models import Product
 def search_product_list_view(request):
     query = request.GET.get('q', None)
     if query is not None:
-        querySet = Product.objects.filter(title__icontains=query)
+        querySet = Product.objects.search(query)
     else:
         querySet = Product.objects.get_featured()
 
