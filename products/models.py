@@ -4,6 +4,7 @@ import random
 import os, time
 from django.db.models.signals import pre_save, post_save
 from products.utils import unique_slug_generator
+from django.urls import reverse
 
 def get_file_extension(file_path):
     base_name = os.path.basename(file_path)
@@ -67,7 +68,8 @@ class Product(models.Model):
     objects = ProductManager()
 
     def get_absolute_url(self):
-        return f"products/{self.slug}/"
+        # return f"products/{self.slug}/"
+        return reverse("detail", kwargs={'slug': self.slug})
 
     def __str__(self) -> str:
         return self.title
