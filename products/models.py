@@ -9,12 +9,16 @@ from django.urls import reverse
 from django.db.models import Q
 
 # Get name and extension of the uploaded file
+
+
 def get_file_extension(file_path):
     base_name = os.path.basename(file_path)
     name, ext = os.path.splitext(base_name)
     return name, ext
 
 # Custom upload file path
+
+
 def upload_image_path(instance, filename):
     name, ext = get_file_extension(filename)
     new_file_name = str(random.randint(1, 99999)) + \
@@ -32,11 +36,15 @@ class ProductQuerySet(models.query.QuerySet):
         return self.filter(featured=True, is_active=True)
 
     def search(self, query):
-        lookups = Q(title__icontains=query) | Q(
-            description__icontains=query) | Q(price__icontains=query)
+        lookups = (Q(title__icontains=query)
+                   | Q(description__icontains=query)
+                   | Q(price__icontains=query)
+                   | Q(tag__title__icontains=query)
+                   )
         return self.filter(lookups).distinct()
 
 # Model manager
+
 
 class ProductManager(models.Manager):
     def get_queryset(self):
@@ -67,8 +75,11 @@ class ProductManager(models.Manager):
         return self.get_queryset().active().search(query)
 
 # Product model
+
+
 class Product(models.Model):
-    title = models.CharField(max_length=250, null=True, blank=True, unique=True)
+    title = models.CharField(max_length=250, null=True,
+                             blank=True, unique=True)
     slug = models.SlugField(blank=True, null=True, unique=True, editable=False)
     description = models.TextField(null=True, blank=True)
     price = models.DecimalField(
@@ -98,6 +109,7 @@ class Product(models.Model):
 def product_pre_save_receiver(sender, instance, *args, **kwargs):
     if not instance.slug:
         instance.slug = unique_slug_generator(instance)
+
 
 # Connect to pre_save signals
 pre_save.connect(product_pre_save_receiver, sender=Product)
