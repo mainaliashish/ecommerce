@@ -11,4 +11,4 @@ def search_product_list_view(request):
     context = {
         'object_list': querySet
     }
-    return render(request, 'products/list.html', context)
+    return render(request, 'search/view.html', context)
