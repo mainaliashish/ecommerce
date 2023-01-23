@@ -1,13 +1,12 @@
 {% extends 'layouts/base.html' %}
 
-<div class="container">
-    {% block content %}
-    <div class="row">
-      {% for product in object_list %}
-        <div class="col-md-3 col-6 col-sm-4">
-          {% include 'products/snippets/card.html' with product=product %}
-        </div>
-      {% endfor %}
+{% block content %}
+<div class="row">
+  {% for product in object_list %}
+    <div class="col-4 col-sm-4 col-md-6 col-lg-4">
+      {% include 'products/snippets/card.html' with product=product %}
     </div>
-    {% endblock %}
+  {% endfor %}
 </div>
+{% endblock %}
+
