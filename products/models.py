@@ -1,24 +1,29 @@
 from django.db import models
 import uuid
 import random
-import os, time
-from django.db.models.signals import pre_save, post_save
+import os
+import time
+from django.db.models.signals import pre_save
 from products.utils import unique_slug_generator
 from django.urls import reverse
+from django.db.models import Q
 
+# Get name and extension of the uploaded file
 def get_file_extension(file_path):
     base_name = os.path.basename(file_path)
     name, ext = os.path.splitext(base_name)
     return name, ext
 
-
+# Custom upload file path
 def upload_image_path(instance, filename):
     name, ext = get_file_extension(filename)
-    new_file_name = str(random.randint(1,99999)) + str(round(time.time() * 1000))
+    new_file_name = str(random.randint(1, 99999)) + \
+        str(round(time.time() * 1000))
     final_file_name = f"{new_file_name}{ext}"
     return f"products/{final_file_name}"
 
 
+# Product queryset
 class ProductQuerySet(models.query.QuerySet):
     def active(self):
         return self.filter(is_active=True)
@@ -26,7 +31,13 @@ class ProductQuerySet(models.query.QuerySet):
     def featured(self):
         return self.filter(featured=True, is_active=True)
 
+    def search(self, query):
+        lookups = Q(title__icontains=query) | Q(
+            description__icontains=query) | Q(price__icontains=query)
+        return self.filter(lookups).distinct()
+
 # Model manager
+
 class ProductManager(models.Manager):
     def get_queryset(self):
         return ProductQuerySet(self.model, using=self._db)
@@ -35,7 +46,7 @@ class ProductManager(models.Manager):
         return self.get_queryset().active()
 
     def get_by_id(self, id):
-        qs =  self.get_queryset().filter(id=id)
+        qs = self.get_queryset().filter(id=id)
         if qs.count() == 1:
             return qs.first()
         return None
@@ -52,13 +63,18 @@ class ProductManager(models.Manager):
             return qs
         return None
 
+    def search(self, query):
+        return self.get_queryset().active().search(query)
 
+# Product model
 class Product(models.Model):
-    title = models.CharField(max_length=250,null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
     slug = models.SlugField(blank=True, null=True, unique=True)
     description = models.TextField(null=True, blank=True)
-    price = models.DecimalField(default=0, decimal_places=2, max_digits=20, null=True)
-    image = models.ImageField(upload_to=upload_image_path, null=True, blank=True)
+    price = models.DecimalField(
+        default=0, decimal_places=2, max_digits=20, null=True)
+    image = models.ImageField(
+        upload_to=upload_image_path, null=True, blank=True)
     featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -78,8 +94,10 @@ class Product(models.Model):
         return self.title
 
 
+# Register signal to update slug name
 def product_pre_save_receiver(sender, instance, *args, **kwargs):
     if not instance.slug:
         instance.slug = unique_slug_generator(instance)
 
+# Connect to pre_save signals
 pre_save.connect(product_pre_save_receiver, sender=Product)
