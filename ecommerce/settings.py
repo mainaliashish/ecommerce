@@ -24,7 +24,8 @@ INSTALLED_APPS = [
     # Custom apps
     'products',
     'search',
-    'tags'
+    'tags',
+    'carts'
 ]
 
 MIDDLEWARE = [
@@ -43,7 +44,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'templates'
+            BASE_DIR, 'templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
